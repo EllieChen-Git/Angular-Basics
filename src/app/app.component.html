@@ -1,3 +1,17 @@
-<h1>Angular</h1>
+<header>
+  <div class="container">
+    <a routerLink="/" class="logo">CoolApp</a>
+    <nav>
+      <ul>
+        <!-- how you link together different pages of your app (instead of href) -->
+        <li><a routerLink="/">Home</a></li>
+        <li><a routerLink="/list">List</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
 
-<courses></courses>
+<div class="container">
+  <!-- where routed components are displayed within the template. -->
+  <router-outlet></router-outlet>
+</div>

@@ -1,0 +1,32 @@
+<h1>Welcome to Home Page</h1>
+
+<!-- One-way data binding -->
+<div class="play-container">
+  <p>
+    You've click <button (click)="countClick()">this</button>
+    {{ clickCounter }} times
+  </p>
+</div>
+
+<!-- Two-way data binding -->
+<div class="play-container">
+  <p>
+    Please enter your name: <input type="text" [(ngModel)]="name" /><br />
+    Hi <strong> {{ name }}</strong>
+  </p>
+</div>
+
+<!-- Ng Template: If/else-->
+
+<div class="play-container">
+  <ng-template [ngIf]="clickCounter > 3" [ngIfElse]="none">
+    <p>
+      The click counter is GREATER than 3.
+    </p>
+  </ng-template>
+  <ng-template #none>
+    <p>
+      The click counter is not greater than 3.
+    </p></ng-template
+  >
+</div>
