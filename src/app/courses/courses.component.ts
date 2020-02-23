@@ -17,6 +17,7 @@ import { Component } from '@angular/core';
       </li>
     </ul>
   `
+
   // html markup for this component
   // *ngFor="": directive to manipulate the DOM
 })

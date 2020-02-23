@@ -1,4 +1,4 @@
-# Angular Bacics
+# Angular Basics
 
 ##### Tutorials I followed:
 
@@ -25,7 +25,7 @@
 
 - **src\main.ts**: starting point of our app
 
-- **src\polyfills.ts**: fill the gap between the JS features that Angular needs and the JS features that currently supported by the browswers
+- **src\polyfills.ts**: fill the gap between the JS features that Angular needs and the JS features that currently supported by the browsers
 
 - **src\test.ts**: setting our test environment
 
@@ -51,8 +51,8 @@
 
 1. Create a Component
 
-- Selector: should be kebab-cased (lower case) and include a desh '-'
-- Class: shoulbe be Pascal case
+- Selector: should be kebab-cased (lower case) and include a dash '-'
+- Class: should be Pascal case
 
 src\app\courses.component.ts
 
@@ -189,7 +189,9 @@ export class HomeComponent implements OnInit {
 }
 ```
 
-**Two-way Data Binding (Event and Property)**: both setting and retreiving the property to and from the component/template
+**Two-way Data Binding (Event and Property)**
+
+- Both setting and retrieving the property to and from the component/template
 
 src\app\home\home.component.html
 
@@ -251,37 +253,74 @@ src\app\home\home.component.html
 </div>
 ```
 
-```typescript
-```
+---
+
+**Style Binding**
 
 ```typescript
+// inline style binding: [style. + CSS property]="expression(ternary operator)"
+<div
+  class="play-container"
+  [style.background-color]="clickCounter > 3 ? 'lightyellow' : 'lightblue'"
+>
+
+// multi-line inline style binding
+<div
+  class="play-container"
+  [ngStyle]="{
+    'background-color': clickCounter > 3 ? 'lightyellow' : 'lightblue',
+    'border': clickCounter > 3 ? '4px solid black' : 'none'
+  }"
+>
 ```
 
-```typescript
-```
+**Class Binding**
+
+- [class.className]
+
+src\app\home\home.component.html
 
 ```typescript
+<div class="play-container" [class.active]="clickCounter > 3">
 ```
 
-```typescript
+src\app\home\home.component.scss
+
+```scss
+.active {
+  background-color: yellow;
+  border: 4px solid black;
+}
 ```
 
-```typescript
-```
+- [ngClass]
+
+src\app\home\home.component.html
 
 ```typescript
+<div class="play-container" [ngClass]="setClasses()">
 ```
 
-```typescript
-```
+src\app\home\home.component.ts
 
 ```typescript
+export class HomeComponent implements OnInit {
+  setClasses() {
+    const myClasses = {
+      active: this.clickCounter > 3,
+      inactive: this.clickCounter <= 3
+    };
+    return myClasses;
+  }
+}
 ```
 
-```typescript
-```
+src\app\home\home.component.scss
 
-```typescript
+```css
+.inactive {
+  background-color: lightgray;
+}
 ```
 
 ---
@@ -365,44 +404,107 @@ import { CoursesService } from './courses.service';
 export class AppModule {}
 ```
 
+---
+
 **Create a Service Using Angular CLI**
 
 ```javascript
-ng g s email
+ng g s http
 
 //Files below will be generated
-CREATE src/app/email.service.spec.ts (352 bytes)
-CREATE src/app/email.service.ts (134 bytes)
+CREATE src/app/http.service.spec.ts (352 bytes)
+CREATE src/app/http.service.ts (134 bytes)
+```
+
+src\app\http\http.service.ts
+
+```typescript
+export class HttpService {
+  constructor() {}
+
+  myMethod() {
+    console.log('Hey, whats up?');
+  }
+}
+```
+
+src\app\list\list.component.ts
+
+```typescript
+import { HttpService } from './../http/http.service';
+
+export class ListComponent implements OnInit {
+  constructor(private http: HttpService) {}
+
+  ngOnInit() {
+    this.http.myMethod();
+  } // ngOnInit(): lifecycle hook that is fired when the component loads.
+  // i.e. run our methods from the service when the component loads.
+  // If click to the list link, you'll see output in console (inspect)
+}
+```
+
+**Use Public API with our Service**
+
+src\app\http\http.service.ts
+
+```typescript
+import { HttpClient } from '@angular/common/http';
+// Need to import HTTP client within our http service to communicate with a public API
+
+export class HttpService {
+  // create an instance of HttpClient through dependency injection
+  constructor(private http: HttpClient) {}
+
+  // create a method that returns the response from the API
+  getBrewery() {
+    return this.http.get('https://api.openbrewerydb.org/breweries');
+  }
+}
+```
+
+src\app\app.module.ts
+
+```typescript
+import { HttpClientModule } from '@angular/common/http';
+
+@NgModule({
+  imports: [HttpClientModule]
+})
+export class AppModule {}
+```
+
+src\app\list\list.component.ts
+
+```typescript
+export class ListComponent implements OnInit {
+  breweries: Object; // Create an object to hold data retrieved from API
+  constructor(private http: HttpService) {}
+
+  ngOnInit() {
+    this.http.getBrewery().subscribe(data => {
+      this.breweries = data;
+      console.log(this.breweries);
+    });
+  }
+   // getBrewery() as a service returns an observable, so we can subscribe to it within the component.
+  // So that we can pass data to 'breweries'
+}
+}
+```
+
+src\app\list\list.component.html
+
+```typescript
+<h1>Breweries</h1>
+
+<ul *ngIf="breweries"> // *ngIf="breweries": if breweries exist (to prevent error. If no data assigned to breweries, app would break)
+  <li *ngFor="let brew of breweries"> // iterate through the array of objects with *ngFor.
+    <p class="name">{{ brew.name }}</p>
+    <p class="country">{{ brew.country }}</p>
+    <a class="site" href="{{ brew.website_url }}">site</a>
+  </li>
+</ul>
 ```
 
 ---
-
-## Angular Commands
-
-##### To start a dev server
-
-```
-ng serve
-```
-
-Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
-
-##### Code scaffolding
-
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
-
-##### Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
-
-##### Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-##### Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-##### Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
